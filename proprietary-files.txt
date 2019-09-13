@@ -1,7 +1,7 @@
 # Unpinned blobs from NX619J-user 9 PKQ1.180929.001 eng.nubia.20201203.235401 release-keys
 
 # Audio
-vendor/lib64/hw/audio.primary.sdm845.so
+vendor/lib64/hw/audio.primary.sdm845.so|0bf8d12315ef1f5f9253f919836b5e5458f69a93
 vendor/lib64/libacdb-fts.so
 vendor/lib64/libacdbrtac.so
 vendor/lib64/libadiertac.so
@@ -12,7 +12,7 @@ vendor/lib64/libaudioparsers.so
 vendor/lib64/libcsd-client.so
 vendor/lib64/libqtigef.so
 vendor/lib64/libtinycompress_vendor.so
-vendor/lib/hw/audio.primary.sdm845.so
+vendor/lib/hw/audio.primary.sdm845.so|0ddf9aef5d300b32a6922f3ddf8856fbefe2de88
 vendor/lib/libacdb-fts.so
 vendor/lib/libacdbrtac.so
 vendor/lib/libadiertac.so

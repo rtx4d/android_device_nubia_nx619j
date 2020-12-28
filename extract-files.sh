@@ -24,11 +24,8 @@ fi
 
 set -e
 
-# Required!
 export DEVICE=nx619j
 export DEVICE_COMMON=sdm845-common
 export VENDOR=nubia
-
-export DEVICE_BRINGUP_YEAR=2023
 
 "./../../${VENDOR}/${DEVICE_COMMON}/extract-files.sh" "$@"

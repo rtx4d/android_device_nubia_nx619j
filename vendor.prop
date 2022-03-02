@@ -1,2 +1,5 @@
 # Bluetooth
 bluetooth.device.default_name=Nubia Red Magic Mars
+
+# USB
+vendor.usb.product_string=Nubia Red Magic Mars

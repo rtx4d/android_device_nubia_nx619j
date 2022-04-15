@@ -35,6 +35,9 @@ BOARD_VENDORIMAGE_PARTITION_SIZE := 1073741824
 # Power
 TARGET_TAP_TO_WAKE_NODE := "/sys/devices/platform/soc/a98000.i2c/i2c-3/3-004b/input/input2/wake_gesture"
 
+# Properties
+TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
+
 # Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 

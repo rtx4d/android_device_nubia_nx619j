@@ -1,3 +1,6 @@
+# Touchscreen
+/sys/devices/platform/soc/a98000\.i2c/i2c-3/3-[0-9a-f]+/input/input[0-9]+/wake_gesture 		 u:object_r:sysfs_sectouch:s0
+
 # Vibrator
 /vendor/bin/hw/android\.hardware\.vibrator@1\.0-service\.nubia_nx619j                        u:object_r:hal_vibrator_default_exec:s0
 /sys/class/leds/tfa9xxx(/.*)?                                                                u:object_r:sysfs_vibrator:s0

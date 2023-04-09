@@ -46,6 +46,10 @@ PRODUCT_PACKAGES += \
     init.nubia.device.rc \
     fstab.qcom
 
+# KeyHandler
+PRODUCT_PACKAGES += \
+    KeyHandler
+
 # Vibrator
 PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-service.nubia_nx619j

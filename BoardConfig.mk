@@ -21,6 +21,9 @@ TARGET_SCREEN_DENSITY := 440
 # Kernel
 TARGET_KERNEL_CONFIG := lineageos_nx619j_defconfig
 
+# Partitions
+BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
+
 # Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 

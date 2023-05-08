@@ -9,6 +9,9 @@
 
 DEVICE_PATH := device/nubia/nx619j
 
+# Releasetools
+TARGET_BOARD_INFO_FILE := $(DEVICE_PATH)/board-info.txt
+
 # Assert
 TARGET_OTA_ASSERT_DEVICE := nx619j,NX619J
 

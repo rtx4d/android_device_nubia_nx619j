@@ -1,0 +1,2 @@
+require version-modem=2019-06-18 10:59:32
+require version-nubiaUI=NX619J_CNCommon_V2.32

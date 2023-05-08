@@ -15,5 +15,8 @@ TARGET_OTA_ASSERT_DEVICE := nx619j,NX619J
 # Kernel
 TARGET_KERNEL_CONFIG := lineageos_nx619j_defconfig
 
+# Recovery
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
+
 # Inherit from the proprietary version
 -include vendor/nubia/nx619j/BoardConfigVendor.mk

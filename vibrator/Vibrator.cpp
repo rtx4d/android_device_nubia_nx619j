@@ -28,17 +28,32 @@
 #include <iostream>
 #include <fstream>
 
-
+static constexpr char DURATION_PATH[] = "/sys/class/leds/tfa9xxx/duration";
 namespace android {
 namespace hardware {
 namespace vibrator {
 namespace V1_0 {
 namespace implementation {
 
-static constexpr int MAX_VOLTAGE = 40;
-static constexpr int MIN_VOLTAGE = 10;
+//static constexpr int MAX_VOLTAGE = 40;
+//static constexpr int MIN_VOLTAGE = 10;
 
-static constexpr uint32_t CLICK_TIMING_MS = 20;
+//static constexpr uint32_t CLICK_TIMING_MS = 20;
+
+/*
+ * Write value to path and close file.
+ */
+template <typename T>
+static void set(const std::string& path, const T& value) {
+    std::ofstream file(path);
+
+    if (!file.is_open()) {
+//        LOG(ERROR) << "Unable to open: " << path << " (" <<  strerror(errno) << ")";
+        return;
+    }
+
+    file << value;
+}
 
 Vibrator::Vibrator(std::ofstream&& enable, std::ofstream&& amplitude) :
         mEnable(std::move(enable)),
@@ -51,6 +66,14 @@ Return<Status> Vibrator::on(uint32_t timeout_ms) {
         ALOGE("Failed to turn vibrator on (%d): %s", errno, strerror(errno));
         return Status::UNKNOWN_ERROR;
     }
+
+    uint32_t val;
+    if ((timeout_ms == 400) || (timeout_ms == 640)) {
+        val = 200;
+    } else {
+        val = timeout_ms;
+    }
+    set(DURATION_PATH, val);
     return Status::OK;
 }
 
@@ -68,13 +91,19 @@ Return<bool> Vibrator::supportsAmplitudeControl()  {
 }
 
 Return<Status> Vibrator::setAmplitude(uint8_t amplitude) {
+    long voltage;
     if (amplitude == 0) {
         return Status::BAD_VALUE;
     }
-    // Scale the voltage such that an amplitude of 1 is MIN_VOLTAGE, an amplitude of 255 is
-    // MAX_VOLTAGE, and there are equal steps for every value in between.
-    long voltage =
-            std::lround((amplitude - 1) / 254.0 * (MAX_VOLTAGE - MIN_VOLTAGE) + MIN_VOLTAGE);
+
+    if (amplitude < 100) {
+        voltage = std::lround(amplitude * 60 / 255);
+    }
+
+    if (amplitude <= 255) {
+        voltage = std::lround(amplitude * 50 / 255);
+    }
+
     ALOGI("Setting amplitude  to: %ld", voltage);
     mAmplitude << voltage << std::endl;
     if (!mAmplitude) {
@@ -89,10 +118,10 @@ Return<void> Vibrator::perform(Effect effect, EffectStrength strength, perform_c
         uint8_t amplitude;
         switch (strength) {
         case EffectStrength::LIGHT:
-            amplitude = 85; // min -- 20
+            amplitude = 64; // min -- 20
             break;
         case EffectStrength::MEDIUM:
-            amplitude = 170; // medium -- 30
+            amplitude = 128; // medium -- 30
             break;
         case EffectStrength::STRONG:
             amplitude = 255; // max -- 40
@@ -101,9 +130,9 @@ Return<void> Vibrator::perform(Effect effect, EffectStrength strength, perform_c
             _hidl_cb(Status::UNSUPPORTED_OPERATION, 0);
             return Void();
         }
-        on(CLICK_TIMING_MS);
+        on(30);
         setAmplitude(amplitude);
-        _hidl_cb(Status::OK, CLICK_TIMING_MS);
+        _hidl_cb(Status::OK, 30);
     } else {
         _hidl_cb(Status::UNSUPPORTED_OPERATION, 0);
     }

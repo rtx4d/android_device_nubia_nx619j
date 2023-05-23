@@ -3,7 +3,7 @@ Copyright (C) 2023 The LineageOS Project
 Device configuration for Nubia Red Magic Mars
 =============================================
 
-The Nubia Red Magic Mars (codenamed _"NX619J"_) is a high-end smartphone from Xiaomi.
+The Nubia Red Magic Mars (codenamed _"NX619J"_) is a high-end smartphone from Nubia.
 
 It was announced in November 2018. Release date was December 2018.
 

@@ -1,3 +1,3 @@
 # Vibrator
-/vendor/bin/hw/android\.hardware\.vibrator-service\.nubia                                    u:object_r:hal_vibrator_default_exec:s0
+/vendor/bin/hw/android\.hardware\.vibrator@1\.0-service\.nubia_nx619j                        u:object_r:hal_vibrator_default_exec:s0
 /sys/class/leds/tfa9xxx(/.*)?                                                                u:object_r:sysfs_vibrator:s0

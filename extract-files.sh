@@ -13,6 +13,10 @@ function blob_fixup() {
     vendor/lib64/hw/audio.primary.sdm845.so)
         patchelf --replace-needed "libcutils.so" "libprocessgroup.so" "${2}"
         ;;
+    vendor/lib64/libgoodixhwfingerprint.so)
+        patchelf --remove-needed "libkeymaster_messages.so" "${2}"
+        patchelf --remove-needed "libsoftkeymasterdevice.so" "${2}"
+        ;;
     esac
 }
 

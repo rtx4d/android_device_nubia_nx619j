@@ -224,17 +224,21 @@ vendor/lib64/libmmcamera_faceproc2.so
 vendor/lib64/libmdsprpc.so
 
 # Fingerprint
-vendor/lib64/hw/fingerprint.goodix.so
-vendor/lib64/hw/fingerprint.silead.default.so
-vendor/lib64/libgf_ca.so
-vendor/lib64/libgf_hal.so
-vendor/lib64/libgoodixhwfingerprint.so
-vendor/lib64/libsl_fp_impl.so
 vendor/lib64/libteeclientjni.so
-vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so
 vendor/lib64/vendor.nubia.ifaa@1.0-impl.so
 vendor/lib64/vendor.nubia.ifaa@1.0.so
 vendor/lib64/vendor.qti.hardware.fingerprint@1.0.so
+
+# Fingerprint - goodix
+vendor/lib64/hw/fingerprint.goodix.so
+vendor/lib64/libgf_ca.so
+vendor/lib64/libgf_hal.so
+vendor/lib64/libgoodixhwfingerprint.so|cc69c245753288ac8c5e94733280b86fc975892a
+vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so
+
+# Fingerprint - silead
+vendor/lib64/hw/fingerprint.silead.default.so
+vendor/lib64/libsl_fp_impl.so
 
 # Firmware - leds
 etc/firmware/aw22xxx_cfg_0.bin:vendor/firmware/aw22xxx_cfg_0.bin

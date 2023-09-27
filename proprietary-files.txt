@@ -194,7 +194,7 @@ vendor/lib64/hw/fingerprint.goodix.so:vendor/lib64/hw/fingerprint.goodix.sdm845.
 vendor/lib64/libgf_ca.so
 vendor/lib64/libgf_hal.so
 vendor/lib64/libgoodixhwfingerprint.so|cc69c245753288ac8c5e94733280b86fc975892a
-vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so
+vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so|0d50c79f4eb79a0ce5fa934e8c807980a19985c7
 
 # Fingerprint - silead
 vendor/lib64/hw/fingerprint.silead.default.so:vendor/lib64/hw/fingerprint.silead.spec.sdm845.so

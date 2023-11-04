@@ -197,7 +197,7 @@ vendor/lib64/libgoodixhwfingerprint.so|cc69c245753288ac8c5e94733280b86fc975892a
 vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so
 
 # Fingerprint - silead
-vendor/lib64/hw/fingerprint.silead.default.so:vendor/lib64/hw/fingerprint.silead.sdm845.so
+vendor/lib64/hw/fingerprint.silead.default.so:vendor/lib64/hw/fingerprint.silead.spec.sdm845.so
 vendor/lib64/libsl_fp_impl.so
 
 # Firmware - leds

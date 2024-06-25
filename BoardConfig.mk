@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2023 The LineageOS Project
+# Copyright (C) 2018-2024 The LineageOS Project
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -30,9 +30,6 @@ TARGET_KERNEL_CONFIG += vendor/nubia/nx619j.config
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 4160749568
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 57089667072
 BOARD_VENDORIMAGE_PARTITION_SIZE := 1073741824
-
-# Power
-TARGET_TAP_TO_WAKE_NODE := "/sys/devices/platform/soc/a98000.i2c/i2c-3/3-004b/input/input2/wake_gesture"
 
 # Properties
 TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop

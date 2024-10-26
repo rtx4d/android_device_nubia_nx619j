@@ -43,6 +43,10 @@ PRODUCT_PACKAGES += \
     init.nubia.device.rc \
     fstab.qcom
 
+# Fingerprint
+PRODUCT_PACKAGES += \
+    liblzma.vendor
+
 # KeyHandler
 PRODUCT_PACKAGES += \
     KeyHandler

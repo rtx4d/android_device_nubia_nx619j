@@ -1,146 +1,361 @@
 /*
- * Copyright (C) 2023 The LineageOS Project
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2024, The LineageOS project
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.
+ *     * Neither the name of The Linux Foundation nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define LOG_TAG "VibratorService"
+#define LOG_TAG "vendor.nubia.hardware.vibrator"
 
-#include <log/log.h>
-
-#include <hardware/hardware.h>
-#include <hardware/vibrator.h>
-
-#include "Vibrator.h"
-
-#include <cinttypes>
 #include <cmath>
-#include <iostream>
-#include <fstream>
+#include <inttypes.h>
+#include <log/log.h>
+#include <string.h>
+#include <thread>
 
-static constexpr char DURATION_PATH[] = "/sys/class/leds/tfa9xxx/duration";
+#include "include/Vibrator.h"
+
+#define LED_DEVICE "/sys/class/leds/tfa9xxx/"
+
+#define VIB_ENABLE    LED_DEVICE "activate"  // Activates vibrator
+                                             // with previously set parameters,
+                                             // accepts either 0 or 1.
+
+#define VIB_AMPLITUDE LED_DEVICE "amplitude" // Stores amplitude, 0 - 100.
+
+#define VIB_DURATION  LED_DEVICE "duration"  // Stores duration for further
+                                             // activation.
+
+// Helps with making low amplitudes more felt.
+// X - amplitude, 0.0 - 1.0
+// X * (X < AMPLITUDE_BOOST_CEILING)
+//       ? MAX_AMPLITUDE + AMPLITUDE_BOOST
+//       : MAX_AMPLITUDE
+#define MAX_AMPLITUDE           30
+#define AMPLITUDE_BOOST         5
+#define AMPLITUDE_BOOST_CEILING 0.4
+
+namespace aidl {
 namespace android {
 namespace hardware {
 namespace vibrator {
-namespace V1_0 {
-namespace implementation {
 
-//static constexpr int MAX_VOLTAGE = 40;
-//static constexpr int MIN_VOLTAGE = 10;
+int Vibrator::write_value(const char *file, int32_t value) {
+    int fd;
+    int ret;
+    int len;
+    char buf[16];
 
-//static constexpr uint32_t CLICK_TIMING_MS = 20;
+    len = snprintf(buf, sizeof(buf), "%d\n", value);
+    buf[len] = '\0';
 
-/*
- * Write value to path and close file.
- */
-template <typename T>
-static void set(const std::string& path, const T& value) {
-    std::ofstream file(path);
-
-    if (!file.is_open()) {
-//        LOG(ERROR) << "Unable to open: " << path << " (" <<  strerror(errno) << ")";
-        return;
+    fd = TEMP_FAILURE_RETRY(open(file, O_WRONLY));
+    if (fd < 0) {
+        ALOGE("open %s failed, errno = %d", file, errno);
+        return -errno;
     }
 
-    file << value;
-}
-
-Vibrator::Vibrator(std::ofstream&& enable, std::ofstream&& amplitude) :
-        mEnable(std::move(enable)),
-        mAmplitude(std::move(amplitude)) {}
-
-// Methods from ::android::hardware::vibrator::V1_0::IVibrator follow.
-Return<Status> Vibrator::on(uint32_t timeout_ms) {
-    mEnable << timeout_ms << std::endl;
-    if (!mEnable) {
-        ALOGE("Failed to turn vibrator on (%d): %s", errno, strerror(errno));
-        return Status::UNKNOWN_ERROR;
-    }
-
-    uint32_t val;
-    if ((timeout_ms == 400) || (timeout_ms == 640)) {
-        val = 200;
+    ret = TEMP_FAILURE_RETRY(write(fd, buf, len + 1));
+    if (ret == -1) {
+        ret = -errno;
+    } else if (ret != len + 1) {
+        /* even though EAGAIN is an errno value that could be set
+        by write() in some cases, none of them apply here.  So, this return
+        value can be clearly identified when debugging and suggests the
+        caller that it may try to call vibrator_on() again */
+        ret = -EAGAIN;
     } else {
-        val = timeout_ms;
+        ret = 0;
     }
-    set(DURATION_PATH, val);
-    return Status::OK;
+
+    errno = 0;
+    close(fd);
+
+    return ret;
 }
 
-Return<Status> Vibrator::off()  {
-    mEnable << 0 << std::endl;
-    if (!mEnable) {
-        ALOGE("Failed to turn vibrator off (%d): %s", errno, strerror(errno));
-        return Status::UNKNOWN_ERROR;
-    }
-    return Status::OK;
+ndk::ScopedAStatus Vibrator::getCapabilities(int32_t* _aidl_return) {
+    *_aidl_return = IVibrator::CAP_ON_CALLBACK
+                        | IVibrator::CAP_PERFORM_CALLBACK
+                        | IVibrator::CAP_AMPLITUDE_CONTROL;
+    return ndk::ScopedAStatus::ok();
 }
 
-Return<bool> Vibrator::supportsAmplitudeControl()  {
-    return true;
+ndk::ScopedAStatus Vibrator::off() {
+    int ret = write_value(VIB_ENABLE, 0);
+    if (ret < 0)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+    
+    return ndk::ScopedAStatus::ok();
 }
 
-Return<Status> Vibrator::setAmplitude(uint8_t amplitude) {
-    long voltage;
-    if (amplitude == 0) {
-        return Status::BAD_VALUE;
+ndk::ScopedAStatus Vibrator::on(int32_t timeoutMs,
+                                const std::shared_ptr<IVibratorCallback>& callback) {
+    int ret;
+
+    ALOGD("Vibrator on for timeoutMs: %d", timeoutMs);
+
+    // Internally, driver can't accept value more than INT32_MAX / 48.
+    // Behaviour would be unexpected and unsafe, so I'll just put this check here.
+    if (timeoutMs > 89478485)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+
+    ret = write_value(VIB_DURATION, timeoutMs);
+    if (ret < 0)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+    
+    ret = write_value(VIB_ENABLE, 1);
+    if (ret < 0)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+
+    if (callback != nullptr) {
+        std::thread([=] {
+            ALOGD("Starting on on another thread");
+            usleep(timeoutMs * 1000);
+            ALOGD("Notifying on complete");
+            if (!callback->onComplete().isOk()) {
+                ALOGE("Failed to call onComplete");
+            }
+        }).detach();
     }
 
-    if (amplitude < 100) {
-        voltage = std::lround(amplitude * 60 / 255);
-    }
-
-    if (amplitude <= 255) {
-        voltage = std::lround(amplitude * 50 / 255);
-    }
-
-    ALOGI("Setting amplitude  to: %ld", voltage);
-    mAmplitude << voltage << std::endl;
-    if (!mAmplitude) {
-        ALOGE("Failed to set amplitude (%d): %s", errno, strerror(errno));
-        return Status::UNKNOWN_ERROR;
-    }
-    return Status::OK;
+    return ndk::ScopedAStatus::ok();
 }
 
-Return<void> Vibrator::perform(Effect effect, EffectStrength strength, perform_cb _hidl_cb) {
-    if (effect == Effect::CLICK) {
-        uint8_t amplitude;
-        switch (strength) {
-        case EffectStrength::LIGHT:
-            amplitude = 64; // min -- 20
+ndk::ScopedAStatus Vibrator::perform(Effect effect, EffectStrength es,
+                                     const std::shared_ptr<IVibratorCallback>& callback,
+                                     int32_t* _aidl_return) {
+    int32_t durationMs;
+    float amplitude;
+    int32_t repeatTimeoutMs = 0;
+
+    ALOGD("Vibrator perform effect %d", static_cast<int>(effect));
+
+    // I feel like that. (c)
+    switch (effect) {
+        case Effect::CLICK:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.25;
+                    break;
+                case EffectStrength::MEDIUM:
+                    amplitude = 0.5;
+                    break;
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 30;
             break;
-        case EffectStrength::MEDIUM:
-            amplitude = 128; // medium -- 30
+        case Effect::DOUBLE_CLICK:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.6;
+                    break;
+                case EffectStrength::MEDIUM:
+                    amplitude = 0.8;
+                    break;
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 10;
+            repeatTimeoutMs = 35;
             break;
-        case EffectStrength::STRONG:
-            amplitude = 255; // max -- 40
+        case Effect::TICK:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.3;
+                    break;
+                case EffectStrength::MEDIUM:
+                    amplitude = 0.65;
+                    break;
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 18;
+            break;
+        case Effect::TEXTURE_TICK:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.6;
+                    break;
+                case EffectStrength::MEDIUM:
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 16;
+            break;
+        case Effect::HEAVY_CLICK:
+        case Effect::THUD:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.7;
+                    break;
+                case EffectStrength::MEDIUM:
+                    amplitude = 0.9;
+                    break;
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 55;
+            break;
+        case Effect::POP:
+            switch (es) {
+                case EffectStrength::LIGHT:
+                    amplitude = 0.55;
+                    break;
+                case EffectStrength::MEDIUM:
+                    amplitude = 0.85;
+                    break;
+                case EffectStrength::STRONG:
+                default:
+                    amplitude = 1;
+                    break;
+            }
+            durationMs = 24;
             break;
         default:
-            _hidl_cb(Status::UNSUPPORTED_OPERATION, 0);
-            return Void();
-        }
-        on(30);
-        setAmplitude(amplitude);
-        _hidl_cb(Status::OK, 30);
-    } else {
-        _hidl_cb(Status::UNSUPPORTED_OPERATION, 0);
+            return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
     }
-    return Void();
+
+    setAmplitude(amplitude);
+    on(durationMs, nullptr);
+
+    if (callback != nullptr || repeatTimeoutMs > 0) {
+        std::thread([=, this] {
+            ALOGD("Starting perform on another thread");
+
+            // -> Enable for durationMs
+            // -> Wait for repeatTimeoutMs
+            // -> Again, enable for durationMs
+
+            if (repeatTimeoutMs) {
+                usleep(durationMs * 1000);
+
+                ALOGD("Repeating perform");
+                usleep(repeatTimeoutMs * 1000);
+
+                setAmplitude(amplitude);
+                on(durationMs, nullptr);
+            }
+            
+            if (callback != nullptr) {
+                usleep(durationMs * 1000);
+                ALOGD("Notifying perform complete");
+                callback->onComplete();
+            }
+        }).detach();
+    }
+
+    *_aidl_return =
+        durationMs + repeatTimeoutMs + (repeatTimeoutMs > 0 ? durationMs : 0);
+    
+    return ndk::ScopedAStatus::ok();
 }
 
-} // namespace implementation
-}  // namespace V1_0
+ndk::ScopedAStatus Vibrator::getSupportedEffects(std::vector<Effect>* _aidl_return) {
+    *_aidl_return = {Effect::CLICK, Effect::DOUBLE_CLICK, Effect::TICK,
+                     Effect::TEXTURE_TICK, Effect::THUD, Effect::POP,
+                     Effect::HEAVY_CLICK};
+    return ndk::ScopedAStatus::ok();
+}
+
+ndk::ScopedAStatus Vibrator::setAmplitude(float amplitude) {
+    char buf[16];
+    int ret;
+    // 0 - 100%, see drivers/leds/nubia_led/tfa9xxx/tfa2_haptic.c L74
+    // Follow the HIDL's behaviour here, boost amplitude at low values.
+    int32_t percentage = std::lround(
+        amplitude *
+            ((amplitude < AMPLITUDE_BOOST_CEILING)
+                ? MAX_AMPLITUDE + AMPLITUDE_BOOST
+                : MAX_AMPLITUDE)
+    );
+
+    if (amplitude <= 0 || amplitude > 1)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+
+    ret = write_value(VIB_AMPLITUDE, percentage);
+    if (ret < 0)
+        return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+    
+    return ndk::ScopedAStatus::ok();
+}
+
+ndk::ScopedAStatus Vibrator::setExternalControl(bool enabled __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::getCompositionDelayMax(int32_t* maxDelayMs  __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::getCompositionSizeMax(int32_t* maxSize __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::getSupportedPrimitives(std::vector<CompositePrimitive>* supported __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::getPrimitiveDuration(CompositePrimitive primitive __unused,
+                                                  int32_t* durationMs __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::compose(const std::vector<CompositeEffect>& composite __unused,
+                                     const std::shared_ptr<IVibratorCallback>& callback __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::getSupportedAlwaysOnEffects(std::vector<Effect>* _aidl_return __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::alwaysOnEnable(int32_t id __unused, Effect effect __unused,
+                                            EffectStrength strength __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
+ndk::ScopedAStatus Vibrator::alwaysOnDisable(int32_t id __unused) {
+    return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+}
+
 }  // namespace vibrator
 }  // namespace hardware
 }  // namespace android
+}  // namespace aidl
+

@@ -1,0 +1,13 @@
+on boot	
+    chown system system /sys/class/leds/tfa9xxx/activate
+    chown system system /sys/class/leds/tfa9xxx/amplitude
+    chown system system /sys/class/leds/tfa9xxx/duration
+
+    chmod 0664 /sys/class/leds/tfa9xxx/activate
+    chmod 0664 /sys/class/leds/tfa9xxx/amplitude
+    chmod 0664 /sys/class/leds/tfa9xxx/duration
+
+service vendor.nubia.hardware.vibrator /vendor/bin/hw/vendor.nubia.hardware.vibrator.service
+    class hal
+    user system
+    group system

@@ -41,7 +41,8 @@ PRODUCT_COPY_FILES += \
 # Device fstab
 PRODUCT_PACKAGES += \
     init.nubia.device.rc \
-    fstab.qcom
+    fstab.qcom \
+    fstab.qcom.ramdisk
 
 # Fingerprint
 PRODUCT_PACKAGES += \

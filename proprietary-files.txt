@@ -1,17 +1,6 @@
 # Unpinned blobs from NX619J-user 9 PKQ1.180929.001 eng.nubia.20201203.235401 release-keys
 
 # Audio
-vendor/lib64/hw/audio.primary.sdm845.so|0bf8d12315ef1f5f9253f919836b5e5458f69a93
-vendor/lib64/libacdb-fts.so
-vendor/lib64/libacdbrtac.so
-vendor/lib64/libadiertac.so
-vendor/lib64/libaudcal.so
-vendor/lib64/libaudioalsa.so
-vendor/lib64/libaudio_log_utils.so
-vendor/lib64/libaudioparsers.so
-vendor/lib64/libcsd-client.so
-vendor/lib64/libqtigef.so
-vendor/lib64/libtinycompress_vendor.so
 vendor/lib/hw/audio.primary.sdm845.so|0ddf9aef5d300b32a6922f3ddf8856fbefe2de88
 vendor/lib/libacdb-fts.so
 vendor/lib/libacdbrtac.so
@@ -26,8 +15,8 @@ vendor/lib/libqtigef.so
 vendor/lib/libtinycompress_vendor.so
 
 # Audio FX modules
-etc/permissions/audiosphere.xml
-framework/audiosphere.jar
+system/etc/permissions/audiosphere.xml
+system/framework/audiosphere.jar
 vendor/lib/soundfx/libasphere.so
 vendor/lib/soundfx/libdtsaudio.so
 vendor/lib/soundfx/libqcbassboost.so
@@ -35,13 +24,6 @@ vendor/lib/soundfx/libqcreverb.so
 vendor/lib/soundfx/libqcvirt.so
 vendor/lib/soundfx/libshoebox.so
 vendor/lib/soundfx/libvolumelistener.so
-vendor/lib64/soundfx/libasphere.so
-vendor/lib64/soundfx/libdtsaudio.so
-vendor/lib64/soundfx/libqcbassboost.so
-vendor/lib64/soundfx/libqcreverb.so
-vendor/lib64/soundfx/libqcvirt.so
-vendor/lib64/soundfx/libshoebox.so
-vendor/lib64/soundfx/libvolumelistener.so
 
 # ACDB
 vendor/etc/acdbdata/MTP/MTP_Bluetooth_cal.acdb
@@ -57,9 +39,6 @@ vendor/etc/acdbdata/adsp_avs_config.acdb
 vendor/lib/libacdb-fts.so
 vendor/lib/libacdbloader.so
 vendor/lib/libacdbrtac.so
-vendor/lib64/libacdb-fts.so
-vendor/lib64/libacdbloader.so
-vendor/lib64/libacdbrtac.so
 
 # Charger
 vendor/bin/hvdcp_opti
@@ -98,7 +77,6 @@ vendor/lib/camera/com.qti.sensor.ov8856.so
 vendor/lib/camera/com.qti.sensor.ov13855.so
 vendor/lib/camera/com.qti.sensor.ov13880.so
 vendor/lib/camera/com.qti.sensor.s5k2x7.so
-
 vendor/lib/camera/com.qti.sensormodule.nubia_imx499.bin
 vendor/lib/camera/com.qti.sensormodule.nubia_nx619_imx519.bin
 vendor/lib/camera/com.qti.sensormodule.nubia_nx619_ov8856.bin
@@ -110,7 +88,6 @@ vendor/lib/camera/com.qti.tuned.nubia_imx519front.bin
 vendor/lib/camera/com.qti.tuned.nubia_nx619_imx519.bin
 vendor/lib/camera/com.qti.tuned.nubia_nx619_ov8856.bin
 vendor/lib/camera/com.qti.tuned.nubia_s5k2x7.bin
-
 vendor/lib/camera/components/com.arcsoft.node.capturebokeh.so
 vendor/lib/camera/components/com.arcsoft.node.realtimebokeh.so
 vendor/lib/camera/components/com.nubia.node.nubiaalgorithm.so
@@ -143,7 +120,6 @@ vendor/lib/camera/components/com.qtistatic.stats.aec.so
 vendor/lib/camera/components/com.qtistatic.stats.af.so
 vendor/lib/camera/components/com.qtistatic.stats.awb.so
 vendor/lib/camera/components/com.qtistatic.stats.pdlib.so
-
 vendor/lib/camera/fdconfigpreview.bin
 vendor/lib/camera/fdconfigpreviewlite.bin
 vendor/lib/camera/fdconfigvideo.bin
@@ -153,16 +129,13 @@ vendor/lib/camera/titan17x_usecases.bin
 # Camera hal
 vendor/lib/hw/camera.qcom.so
 vendor/lib/hw/com.qti.chi.override.so
-vendor/lib64/hw/camera.qcom.so
 
 # Camera firmware
 vendor/firmware/CAMERA_ICP.elf
 
 # Camera core
-vendor/lib/libarcsoft_beautyshot_video_algorithm.so
 vendor/lib/libarcsoft_beautyshot.so
 vendor/lib/libarcsoft_high_dynamic_range.so
-
 vendor/lib/libcamxfdalgov7.so
 vendor/lib/libcamxfdengine.so
 vendor/lib/libcamxstatscore.so
@@ -174,14 +147,6 @@ vendor/lib/libmmcamera_faceproc2.so
 vendor/lib/libmdsprpc.so
 vendor/lib/libmpbase.so
 vendor/lib/libswregistrationalgo.so
-
-vendor/lib64/libcamxfdalgov7.so
-vendor/lib64/libcamxfdengine.so
-vendor/lib64/libcamxstatscore.so
-vendor/lib64/libcamxtintlessalgo.so
-vendor/lib64/libmmcamera_faceproc.so
-vendor/lib64/libmmcamera_faceproc2.so
-vendor/lib64/libmdsprpc.so
 
 # Fingerprint
 vendor/lib64/libteeclientjni.so
@@ -273,7 +238,6 @@ vendor/firmware/a630_zap.mdt
 vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti
 vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc
 vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so
-vendor/lib/hw/android.hardware.gatekeeper@1.0-impl-qti.so
 
 # Keymaster
 vendor/bin/hw/android.hardware.keymaster@4.0-service-qti
@@ -282,10 +246,6 @@ vendor/lib64/libkeymasterdeviceutils.so
 vendor/lib64/libkeymasterprovision.so
 vendor/lib64/libkeymasterutils.so
 vendor/lib64/libqtikeymaster4.so
-vendor/lib/libkeymasterdeviceutils.so
-vendor/lib/libkeymasterprovision.so
-vendor/lib/libkeymasterutils.so
-vendor/lib/libqtikeymaster4.so
 
 # QDCM calibration data
 vendor/etc/qdcm_calib_data_Dual_nt35597_video_mode_dsi_truly_panel_without_DSC.xml
@@ -297,7 +257,6 @@ vendor/etc/qdcm_calib_data_Sharp_4k_cmd_mode_dsc_dsi_panel.xml
 # Sensors - light & promixity
 vendor/lib64/sensors.oem.so
 vendor/lib64/sensors.ssc.so
-vendor/lib/sensors.ssc.so
 
 # Sensors configs
 vendor/etc/sensors/config/ak991x_dri_0.json

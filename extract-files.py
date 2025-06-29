@@ -18,7 +18,7 @@ namespace_imports = [
 ]
 
 blob_fixups: blob_fixups_user_type = {
-    ('vendor/lib/hw/audio.primary.sdm845.so', 'vendor/lib64/hw/audio.primary.sdm845.so'): blob_fixup()
+    'vendor/lib/hw/audio.primary.sdm845.so': blob_fixup()
         .replace_needed('libcutils.so', 'libprocessgroup.so'),
     'vendor/lib64/libgoodixhwfingerprint.so': blob_fixup()
         .remove_needed('libkeymaster_messages.so')

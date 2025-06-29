@@ -56,6 +56,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     vendor.nubia.hardware.vibrator.service
 
+# VNDK
+PRODUCT_PACKAGES += \
+    libstdc++_vendor
+
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)

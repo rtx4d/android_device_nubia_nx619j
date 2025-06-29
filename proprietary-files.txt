@@ -1,9 +1,7 @@
 # Unpinned blobs from NX619J-user 9 PKQ1.180929.001 eng.nubia.20201203.235401 release-keys
 
 # Audio
-vendor/lib/hw/audio.primary.sdm845.so|0ddf9aef5d300b32a6922f3ddf8856fbefe2de88
-vendor/lib/libacdb-fts.so
-vendor/lib/libacdbrtac.so
+vendor/lib/hw/audio.primary.sdm845.so|e97cff8017a65124354c77504beaf88954e5fda8
 vendor/lib/libadiertac.so
 vendor/lib/libadm.so
 vendor/lib/libaudcal.so
@@ -11,6 +9,7 @@ vendor/lib/libaudioalsa.so
 vendor/lib/libaudio_log_utils.so
 vendor/lib/libaudioparsers.so
 vendor/lib/libcsd-client.so
+vendor/lib/libdts-eagle-shared.so
 vendor/lib/libqtigef.so
 vendor/lib/libtinycompress_vendor.so
 
@@ -142,27 +141,27 @@ vendor/lib/libcamxstatscore.so
 vendor/lib/libcamxtintlessalgo.so
 vendor/lib/libcom.nubia.chinodenubiautils.so
 vendor/lib/libcom.qti.chinodeutils.so
-vendor/lib/libmmcamera_faceproc.so
+vendor/lib/libmmcamera_faceproc.so|96492f80b9a1d74f8052f278c1e534380e07be31
 vendor/lib/libmmcamera_faceproc2.so
 vendor/lib/libmdsprpc.so
 vendor/lib/libmpbase.so
-vendor/lib/libswregistrationalgo.so
+vendor/lib/libswregistrationalgo.so|12eeab55c53f325962bfe85e44aa5e0b49e75390
 
 # Fingerprint
 vendor/lib64/libteeclientjni.so
 vendor/lib64/vendor.nubia.ifaa@1.0-impl.so
-vendor/lib64/vendor.nubia.ifaa@1.0.so
-vendor/lib64/vendor.qti.hardware.fingerprint@1.0.so
+vendor/lib64/vendor.nubia.ifaa@1.0.so|49013faa2a901b59e48206a77aa07b5aa375973f
+vendor/lib64/vendor.qti.hardware.fingerprint@1.0.so|cf17d10a767ce348850a7900f4d75a3b5c25fb5e
 
 # Fingerprint - goodix
-vendor/lib64/hw/fingerprint.goodix.so:vendor/lib64/hw/fingerprint.goodix.sdm845.so
+vendor/lib64/hw/fingerprint.goodix.so:vendor/lib64/hw/fingerprint.goodix.sdm845.so;FIX_SONAME
 vendor/lib64/libgf_ca.so
 vendor/lib64/libgf_hal.so
 vendor/lib64/libgoodixhwfingerprint.so|cc69c245753288ac8c5e94733280b86fc975892a
 vendor/lib64/vendor.goodix.hardware.biometrics.fingerprint@2.1.so|0d50c79f4eb79a0ce5fa934e8c807980a19985c7
 
 # Fingerprint - silead
-vendor/lib64/hw/fingerprint.silead.default.so:vendor/lib64/hw/fingerprint.silead.spec.sdm845.so
+vendor/lib64/hw/fingerprint.silead.default.so:vendor/lib64/hw/fingerprint.silead.spec.sdm845.so;FIX_SONAME
 vendor/lib64/libsl_fp_impl.so
 
 # Firmware - leds
